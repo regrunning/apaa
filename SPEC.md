@@ -292,3 +292,13 @@ Capability-based security models
 Agent communication protocols
 
 APAA focuses on action-level authorization, not identity delegation.
+
+14. IANA Considerations
+
+This document has no IANA considerations.
+
+15. Conclusion
+
+APAA defines a minimal, explicit protocol for authorizing autonomous agent actions.
+By separating intent, authorization, execution, and audit, APAA enables safer
+deployment of autonomous systems in real-world environments.
