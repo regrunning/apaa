@@ -1,5 +1,5 @@
+Authorization Protocol for Autonomous Agents (APAA)
 Version 0.1 — Draft
-
 Status of This Document
 
 This document defines APAA v0.1, a draft protocol.
@@ -18,8 +18,8 @@ for audit and incident response.
 
 APAA is a control-plane protocol. It does not execute actions, define policy
 languages, or replace identity systems. Instead, it standardizes how agents
-request authorization, how authorization is granted, and how execution outcomes
-are recorded.
+request authorization, how authorization is granted, and how execution
+outcomes are recorded.
 
 2. Goals and Non-Goals
 2.1 Goals
@@ -59,13 +59,13 @@ All timestamps MUST be RFC 3339 formatted UTC timestamps.
 
 APAA defines the following actors:
 
-Agent: An autonomous system that proposes actions
+Agent — An autonomous system that proposes actions
 
-Authorization Server: Evaluates requests and issues decisions
+Authorization Server — Evaluates requests and issues decisions
 
-Executor: Performs side-effectful actions
+Executor — Performs side-effectful actions
 
-Audit Log: An append-only record of protocol events
+Audit Log — An append-only record of protocol events
 
 5. Protocol Overview
 
@@ -90,7 +90,6 @@ The Executor submits an ExecutionReceipt
 
 An ActionRequest represents an agent’s intent to perform a specific
 side-effectful action.
-
 {
   "request_id": "req_123",
   "agent_id": "support-agent-001",
@@ -117,7 +116,7 @@ Authorization Servers MUST treat request_id as idempotent
 
 Agents MUST NOT execute side-effectful actions without authorization
 
-dry_run, if true, MUST NOT result in a Lease being issued
+If dry_run is true, a Lease MUST NOT be issued
 
 6.2 AuthorizationDecision
 
@@ -137,14 +136,12 @@ ALLOW
   "constraint_hash": "sha256:abcd...",
   "audit_id": "audit_789"
 }
-
 DENY
 {
   "decision": "DENY",
   "reason": "Policy violation",
   "audit_id": "audit_790"
 }
-
 Requirements
 
 Default decision MUST be DENY
@@ -154,7 +151,6 @@ All decisions MUST be logged
 ALLOW decisions MUST include a Lease
 
 expires_at MUST be enforced
-
 6.3 Lease
 
 A Lease is a short-lived, unforgeable authorization granting permission
@@ -195,7 +191,6 @@ Executors MUST enforce all applicable constraints.
 6.5 ExecutionReceipt
 
 An ExecutionReceipt records the outcome of an executed action.
-
 {
   "lease_id": "lease_abc",
   "audit_id": "audit_789",
@@ -206,13 +201,11 @@ An ExecutionReceipt records the outcome of an executed action.
     "refund_id": "rf_556677"
   }
 }
-
 Requirements
 
 Executors MUST submit a receipt for executed actions
 
 Receipts MUST reference the Lease and audit_id
-
 7. Endpoints
 7.1 POST /authorize
 
@@ -299,27 +292,3 @@ Capability-based security models
 Agent communication protocols
 
 APAA focuses on action-level authorization, not identity delegation.
-
-13. Future Work
-
-Potential extensions include:
-
-Human-in-the-loop approvals
-
-Standard policy languages
-
-Cross-organization trust
-
-Rollback semantics
-
-Delegated leases
-
-14. IANA Considerations
-
-This document has no IANA considerations.
-
-15. Conclusion
-
-APAA defines a minimal, explicit protocol for authorizing autonomous
-agent actions. By separating intent, authorization, execution, and audit,
-APAA enables safer deployment of autonomous systems in real-world environments.
