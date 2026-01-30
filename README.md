@@ -5,6 +5,8 @@
 **Author:** Sara Almeida ([@regrunning](https://twitter.com/regrunning))  
 **Reference Implementation:** [Reg.Run](https://reg.run)
 
+Note: APAA v0.1 is an initial draft focused on core authorization mechanics.
+Future versions will expand on ownership, failure modes, and agent trust models.
 ---
 
 ## Abstract
