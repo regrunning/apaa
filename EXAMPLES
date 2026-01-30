@@ -1,0 +1,104 @@
+# APAA Examples
+
+Real-world use cases for APAA.
+
+## Use Case 1: Customer Service Refunds
+
+**Scenario:** AI agent processes refund requests
+
+**Policy:**
+- Auto-approve: < $100, within 30 days
+- Require approval: $100-$500, within 30 days
+- Deny: > $500 or outside return window
+
+**Example Request:**
+```json
+{
+  "protocol": "apaa/0.1",
+  "id": "refund-12345",
+  "agent": {
+    "id": "customer-service-bot",
+    "type": "ai_agent"
+  },
+  "action": {
+    "type": "refund",
+    "resource": "order/98765",
+    "parameters": {
+      "amount": 149.99,
+      "reason": "defective_product"
+    }
+  },
+  "context": {
+    "customer_lifetime_value": 2500,
+    "days_since_purchase": 12,
+    "customer_tier": "gold"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "protocol": "apaa/0.1",
+  "request_id": "refund-12345",
+  "decision": "requires_approval",
+  "reason": "$149.99 requires manager approval",
+  "approval": {
+    "status": "pending",
+    "approver_role": "support_manager",
+    "expires_at": "2025-01-31T12:00:00Z"
+  }
+}
+```
+
+## Use Case 2: Data Access Control
+
+**Scenario:** AI analyst wants to query customer database
+
+**Policy:**
+- Auto-approve: Read queries on non-PII tables
+- Require approval: Write operations
+- Deny: PII access, production database writes
+
+## Use Case 3: Financial Transactions
+
+**Scenario:** Trading bot wants to execute trades
+
+**Policy:**
+- Auto-approve: Trades < $1,000
+- Require approval: $1,000-$50,000
+- Deny: > $50,000 or high-risk assets
+
+See more examples in [examples/](./examples/) directory.
+```
+
+---
+
+## **STEP 4: CREATE VISUALS (Saturday)**
+
+### **Diagram 1: APAA Flow**
+
+Create simple diagram showing:
+```
+Agent → APAA Server → Policy Engine → Decision
+                          ↓
+                    (if approval needed)
+                          ↓
+                   Human Dashboard → Approval
+```
+
+Use: excalidraw.com or draw.io
+
+---
+
+### **Diagram 2: Comparison**
+```
+┌──────────────┬─────────┬──────────┬─────────┐
+│              │ OAuth   │ Tenuo    │ APAA    │
+├──────────────┼─────────┼──────────┼─────────┤
+│ For          │ Users   │ Agents   │ Agents  │
+│ Scope        │ Session │ Technical│ Business│
+│ Approval     │ No      │ No       │ Yes     │
+│ Audit        │ Basic   │ Crypto   │ Full    │
+│ Policy Lang  │ No      │ Tokens   │ Rules   │
+└──────────────┴─────────┴──────────┴─────────┘
