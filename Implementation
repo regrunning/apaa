@@ -1,0 +1,117 @@
+# APAA Implementation Guide
+
+Quick guide to implementing APAA in your system.
+
+## Minimal Implementation (1 hour)
+
+### 1. Authorization Endpoint
+```python
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class APAARequest(BaseModel):
+    protocol: str  # "apaa/0.1"
+    id: str
+    agent: dict
+    action: dict
+    context: dict = {}
+
+@app.post("/apaa/authorize")
+async def authorize(request: APAARequest):
+    # Simple policy: amounts < $100 auto-approve
+    amount = request.action.get("parameters", {}).get("amount", 0)
+    
+    if amount < 100:
+        return {
+            "protocol": "apaa/0.1",
+            "request_id": request.id,
+            "decision": "approved",
+            "reason": "Amount under $100 limit"
+        }
+    elif amount < 500:
+        return {
+            "protocol": "apaa/0.1",
+            "request_id": request.id,
+            "decision": "requires_approval",
+            "approval": {
+                "status": "pending",
+                "approver_role": "manager"
+            }
+        }
+    else:
+        return {
+            "protocol": "apaa/0.1",
+            "request_id": request.id,
+            "decision": "denied",
+            "reason": "Amount exceeds $500 limit"
+        }
+```
+
+### 2. Agent Integration
+```python
+import requests
+
+def request_authorization(action_type, resource, parameters, context={}):
+    response = requests.post("https://apaa-server.example.com/apaa/authorize", json={
+        "protocol": "apaa/0.1",
+        "id": generate_unique_id(),
+        "agent": {
+            "id": "my-agent-001",
+            "type": "ai_agent"
+        },
+        "action": {
+            "type": action_type,
+            "resource": resource,
+            "parameters": parameters
+        },
+        "context": context
+    })
+    
+    decision = response.json()
+    
+    if decision["decision"] == "approved":
+        # Proceed with action
+        return True
+    elif decision["decision"] == "requires_approval":
+        # Wait for human approval
+        return wait_for_approval(decision["request_id"])
+    else:
+        # Denied - do not proceed
+        return False
+```
+
+## Full Implementation
+
+See [Reg.Run source code](https://github.com/regrunning/regrun_mvp) for complete reference implementation.
+
+## Testing
+```bash
+# Test authorization request
+curl -X POST https://your-server.com/apaa/authorize \
+  -H "Content-Type: application/json" \
+  -d '{
+    "protocol": "apaa/0.1",
+    "id": "test-001",
+    "agent": {"id": "test-agent", "type": "ai_agent"},
+    "action": {
+      "type": "refund",
+      "resource": "order/123",
+      "parameters": {"amount": 50}
+    }
+  }'
+```
+
+## Compliance Badge
+
+Once implemented, add to your README:
+```markdown
+✅ APAA v0.1 Compliant
+
+This system implements the [Authorization Protocol for AI Agents](https://github.com/regrunning/apaa-spec).
+```
+
+---
+
+Questions? Open an issue or email sara@reg.run
