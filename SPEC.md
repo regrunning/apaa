@@ -1,9 +1,5 @@
 Authorization Protocol for Autonomous Agents (APAA)
 Version 0.1
-Status of This Document - Draft
-
-This document defines APAA v0.1, a draft protocol.
-It is not a standard and is subject to change.
 
 1. Introduction
 
